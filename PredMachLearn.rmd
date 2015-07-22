@@ -66,7 +66,8 @@ modelFit <- randomForest(classe ~ ., data=training)
 modelFit
 ```
 
-We can see that the error rate estimate is quite low: 0.54%.
+We can see that the error rate estimate is quite low, around 0.5%.
+We would expect the out of sample error rate to be similar, if not slight higher than this.
 
 ##Cross validation
 We now cross validate the model using a confusion matrix in order to determine the accuracy.
@@ -76,7 +77,8 @@ predictCrossVal <- predict(modelFit, crossval)
 confusionMatrix(crossval$classe, predictCrossVal)
 ```
 
-The accuracy is 99%
+The accuracy is around 99.5%, giving out out of sample error of around 0.5%.
+This is in line with our previous estimation.
 
 ##Prediction
 Apply model against testing data set to predict the classe.
