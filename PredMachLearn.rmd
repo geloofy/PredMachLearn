@@ -1,0 +1,90 @@
+---
+title: "Exercise Manner Prediction Assignment"
+author: "Geoffrey Smith"
+date: "July 21, 2015"
+output: html_document
+---
+
+```{r echo=FALSE}
+library(knitr)
+opts_chunk$set(message=F)
+```
+
+##Executive Summary
+This report serves as an investigation and analysis of quantified self movement data in an effort to predict the manner in which an exercise has been performed. I will show that using a random forests model we will be able to provide an accurate prediction of the classe.
+
+##Libraries
+```{r}
+library(caret)
+library(corrplot)
+library(kernlab)
+library(randomForest)
+```
+
+##Data processing
+Load and clean training data.
+
+```{r}
+training <- read.csv("./pml-training.csv", na.strings=c("NA",""," "))
+trainingNAs <- apply(training, 2, function(x) {sum(is.na(x))}) #find NAs
+trainingClean <- training[,which(trainingNAs == 0)] #remove NAs
+trainingClean <- trainingClean[8:length(trainingClean)] #remove first eight identifier columns
+```
+
+Load and clean testing data.
+```{r}
+testing <- read.csv("./pml-testing.csv", na.strings=c("NA",""," "))
+testingNAs <- apply(testing, 2, function(x) {sum(is.na(x))}) #find NAs
+testingClean <- testing[,which(testingNAs == 0)] #remove NAs
+testingClean <- testingClean[8:length(testingClean)] #remove first eight identifier columns
+testing <- testingClean
+
+```
+
+Split cleaned training data for cross validation.
+
+```{r}
+inTrain <- createDataPartition(y=trainingClean$classe, p=0.7, list=F)
+training <- trainingClean[inTrain,]
+crossval <- trainingClean[-inTrain,]
+```
+
+##Data exploration
+Plot correlation matrix to view variable relationships and identify highly correlated predictors.
+We can see from the figure below that there are few highly correlated predictors - We will thus include all predictors in the model.
+
+```{r, fig.height=10, fig.width=10}
+corrMatrix <- cor(training[, -length(training)])
+corrplot(corrMatrix, order="FPC", method="circle", type="lower", tl.cex=0.8, tl.col=rgb(0,0,0))
+```
+
+##Model fit
+A random forest model will be fitted.
+
+```{r}
+modelFit <- randomForest(classe ~ ., data=training)
+modelFit
+```
+
+We can see that the error rate estimate is quite low: 0.54%.
+
+##Cross validation
+We now cross validate the model using a confusion matrix in order to determine the accuracy.
+
+```{r}
+predictCrossVal <- predict(modelFit, crossval)
+confusionMatrix(crossval$classe, predictCrossVal)
+```
+
+The accuracy is 99%
+
+##Prediction
+Apply model against testing data set to predict the classe.
+
+```{r}
+predictTesting <- predict(modelFit, testing)
+predictTesting
+```
+
+##Conclusion
+The random forest model was able to provide a very accurate prediction of classe based on the us of all of the available parameters.
