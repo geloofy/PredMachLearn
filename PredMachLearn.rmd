@@ -59,7 +59,7 @@ corrplot(corrMatrix, order="FPC", method="circle", type="lower", tl.cex=0.8, tl.
 ```
 
 ##Model fit
-A random forest model will be fitted.
+A random forest model will be fitted. Random forests handles unbalanced and low correlated data well.
 
 ```{r}
 modelFit <- randomForest(classe ~ ., data=training)
@@ -67,7 +67,7 @@ modelFit
 ```
 
 We can see that the error rate estimate is quite low, around 0.5%.
-We would expect the out of sample error rate to be similar, if not slight higher than this.
+We would expect the out of sample error rate to be similar, if not slightly higher than this.
 
 ##Cross validation
 We now cross validate the model using a confusion matrix in order to determine the accuracy.
@@ -77,7 +77,7 @@ predictCrossVal <- predict(modelFit, crossval)
 confusionMatrix(crossval$classe, predictCrossVal)
 ```
 
-The accuracy is around 99.5%, giving out out of sample error of around 0.5%.
+The accuracy is around 99.5%, giving an out of sample error of around 0.5%.
 This is in line with our previous estimation.
 
 ##Prediction
@@ -89,4 +89,4 @@ predictTesting
 ```
 
 ##Conclusion
-The random forest model was able to provide a very accurate prediction of classe based on the us of all of the available parameters.
+The random forest model was able to provide a very accurate prediction of classe based on the use of all of the available parameters.
